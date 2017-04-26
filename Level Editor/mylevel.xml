@@ -1,0 +1,16 @@
+<Root>
+    <Rects x="325" y="458" w="444" h="73" type="0" rotate="0" bounce="0.1" friction="2.5" density="1" kine="1"/>
+    <Rects x="593" y="367.5" w="219.4288" h="219.4288" type="7" rotate="353.45465" bounce="0.1" friction="2.5" density="1" kine="1"/>
+    <Rects x="758" y="270" w="238.53722" h="238.53722" type="7" rotate="302.99496" bounce="0.1" friction="2.5" density="1" kine="1"/>
+    <Rects x="726" y="178" w="15.6205" h="15.6205" type="6" rotate="0" bounce="0.1" friction="0.1" density="10" kine="0"/>
+    <Rects x="403" y="356" w="50" h="50" type="4" rotate="0" bounce="0" friction="0" density="0" kine="1"/>
+    <Rects x="819" y="167" w="233" h="123" type="1" rotate="0" bounce="0.2" friction="0" density="1" kine="1"/>
+    <Rects x="1001" y="223" w="225" h="96" type="3" rotate="35" bounce="2" friction="1.5" density="1" kine="1"/>
+    <Rects x="1473" y="229" w="386" h="130" type="3" rotate="0" bounce="1" friction="1.5" density="1" kine="1"/>
+    <Rects x="1745.5" y="12" w="43.965897" h="43.965897" type="7" rotate="107.25291" bounce="0.2" friction="1.5" density="1" kine="0"/>
+    <Rects x="1636.5" y="-8.5" w="47.010635" h="47.010635" type="7" rotate="66.194817" bounce="0.2" friction="1.5" density="1" kine="0"/>
+    <Rects x="1543" y="-60" w="21.931713" h="21.931713" type="6" rotate="0" bounce="0.2" friction="1.5" density="1" kine="0"/>
+    <Rects x="1686" y="-94" w="22.36068" h="22.36068" type="6" rotate="0" bounce="0.2" friction="1.5" density="1" kine="0"/>
+    <Rects x="1825" y="-87" w="20.591261" h="20.591261" type="6" rotate="0" bounce="0.2" friction="1.5" density="1" kine="0"/>
+    <Rects x="1805" y="183" w="50" h="50" type="5" rotate="0" bounce="0" friction="0" density="0" kine="1"/>
+</Root>
