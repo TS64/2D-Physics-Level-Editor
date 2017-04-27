@@ -12,36 +12,32 @@ class LevelEditor
 public:
 	LevelEditor(sf::View* v, MathMethods* m);
 	void Update(sf::RenderWindow &w);
-	void UpdatePreview(sf::RenderWindow &w);
-	void HandleEvents(sf::Event e, sf::RenderWindow &w);
+	void UpdatePreview(sf::RenderWindow &w);	// Update the transparent preview of the block being placed
+	void HandleEvents(sf::Event e, sf::RenderWindow &w);	
 	void Draw(sf::RenderWindow &w, bool playing);
-	vector<tuple<sf::RectangleShape, int, float, float, float, float, bool>> getLevelRects();
-	void setLevelRects(vector<tuple<sf::RectangleShape, int, float, float, float, float, bool>> rects);
-	void DeleteBlock(int b);
-	b2World* GetWorld();
-	int GetCurrentBlock();
-	int GetCurrentElement();
-	void SetCurrentElement(int e);
-	void SetCurrentBlockStats(float friction, float bounce, float density);
-	string GetNameOfLevelToSave();
-	string GetNameOfLevelToLoad();
+	vector<tuple<sf::RectangleShape, int, float, float, float, float, bool>> getLevelRects();	// Get a vector of blocks in the level
+	void setLevelRects(vector<tuple<sf::RectangleShape, int, float, float, float, float, bool>> rects);	// Set the vector of blocks in the level
+	void DeleteBlock(int b);	// Delete the block on given position
+	b2World* GetWorld();		// Get the world
+	int GetCurrentBlock();		// Get the number of the selected block
+	int GetCurrentElement();	// Get the element of the selected block
+	void SetCurrentElement(int e);	// Set the selected element
+	void SetCurrentBlockStats(float friction, float bounce, float density);	// Get the stats of the current block
+	string GetNameOfLevelToSave();	// Get the name of the level you are saving
+	string GetNameOfLevelToLoad();	// Get the name of the level you are loading
 	void SetNameOfLevelToSave(string fileName);
 	void SetNameOfLevelToLoad(string fileName);
 	bool ShapeSelected();
-	void SetPlayerSpawn(sf::Vector2f pos);
-	sf::Vector2f GetPlayerSpawn();
+	
 	void SetLevelFinish(sf::Vector2f pos);
 	sf::Vector2f GetLevelFinish();
 	vector<b2Body*> GetBlockBodies();
 	b2Body* GetBlockBody(int i);
-	void SetBackGround(int i);
-	int GetBackGround();
+
 	void WindowResized();
 	void ResetLevel();
 	void SaveDefaultLevel();
 	void ApplyGravity();
-	void SetShape(int shape);
-	int GetShape();
 	int GetSelectedBlockType();
 	sf::Vector2f GetSelectedBlockSize();
 
@@ -55,9 +51,14 @@ public:
 	void SetDensity(int block, float density);
 	float GetRotation(int block);
 	void SetRotation(int block, float rotation);
-	int GetCurrentShape();
-	void SetCurrentShape(int shape);
-	void SetIsKine(bool kine);
+	void SetIsKine(bool kine);	// Set if the next shape is kinematic(true) or dynamic(false)
+	void SetShape(int shape);	// Set current shape
+	int GetShape();	// Get selected shape (box, circle, line)
+	void SetBackGround(int i);
+	int GetBackGround();
+	void SetPlayerSpawn(sf::Vector2f pos);
+	sf::Vector2f GetPlayerSpawn();
+	void TurnOffHighlight();
 
 private:
 	vector<tuple<sf::RectangleShape, int, float, float, float, float, bool>> levelRects; // Rect, type, angle, bounce, friction, density, kine
@@ -79,7 +80,7 @@ private:
 	bool startDrawing = false;
 	bool stopDrawing = false;
 	bool cameraMoved = false;
-	bool shapeSelected;
+	bool isShapeSelected;
 	bool spaceKeyPressed = false;
 	bool shrunkWorld = false;
 	bool isKine = true;

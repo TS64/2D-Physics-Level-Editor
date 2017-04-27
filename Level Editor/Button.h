@@ -362,9 +362,9 @@ public:
 	}
 	virtual void Draw(sf::RenderWindow &w)
 	{
-		/*optionBtnSpr.setPosition(position);
+		optionBtnSpr.setPosition(position);
 		optionBtnSpr.setPosition(w.mapPixelToCoords((sf::Vector2i)optionBtnSpr.getPosition()));
-		w.draw(optionBtnSpr);*/
+		w.draw(optionBtnSpr);
 	}
 	virtual int GetType() { return -1; }
 	virtual string GetName() { return "Option"; }
@@ -628,7 +628,7 @@ public:
 	}
 	virtual int execute()
 	{
-		printf("Setting element to grass\n");
+		//printf("Setting element to grass\n");
 		editor->SetCurrentElement(0);
 		return -1;
 	}
@@ -685,7 +685,7 @@ public:
 	}
 	virtual int execute()
 	{
-		printf("Setting element to ice\n");
+		//printf("Setting element to ice\n");
 		editor->SetCurrentElement(1);
 		return -1;
 	}
@@ -742,7 +742,7 @@ public:
 	}
 	virtual int execute()
 	{
-		printf("Setting element to water\n");
+		//printf("Setting element to water\n");
 		editor->SetCurrentElement(4);
 		return -1;
 	}
@@ -799,7 +799,7 @@ public:
 	}
 	virtual int execute()
 	{
-		printf("Setting element to metal\n");
+		//printf("Setting element to metal\n");
 		editor->SetCurrentElement(2);
 		return -1;
 	}
@@ -839,6 +839,7 @@ public:
 	bool enabled = true;
 };
 
+// ID = 7
 class SpawnButton : public Button
 {
 public:
@@ -854,8 +855,8 @@ public:
 	}
 	virtual int execute()
 	{
-		printf("Setting element to spawn\n");
 		editor->SetCurrentElement(7);
+		editor->SetShape(0);
 		return -1;
 	}
 	virtual void Enable(bool b)
@@ -895,6 +896,7 @@ private:
 	bool enabled = true;
 };
 
+// ID = 8
 class FinishButton : public Button
 {
 public:
@@ -910,8 +912,8 @@ public:
 	}
 	virtual int execute()
 	{
-		printf("Setting element to finish\n");
 		editor->SetCurrentElement(8);
+		editor->SetShape(0);
 		return -1;
 	}
 	virtual void Enable(bool b)

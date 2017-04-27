@@ -1085,8 +1085,9 @@ public:
 	SpawnBlock(sf::Vector2f pos)
 	{
 		position = pos;
-		spawnTex.loadFromFile("Textures/Elements/spawnPoint.png");
-		spawnSpr.setTexture(spawnTex);
+		spawnTexBlack.loadFromFile("Textures/Elements/spawnPointBlack.png");
+		spawnTexWhite.loadFromFile("Textures/Elements/spawnPointWhite.png");
+		spawnSpr.setTexture(spawnTexBlack);
 		spawnSpr.setOrigin(25, 25);
 		spawnSpr.setPosition(position);
 	}
@@ -1094,8 +1095,16 @@ public:
 	{
 
 	}
-	virtual void Draw(sf::RenderWindow &w, bool c)
+	virtual void Draw(sf::RenderWindow &w, bool darkBG)
 	{
+		if (!darkBG)
+		{
+			spawnSpr.setTexture(spawnTexBlack);
+		}
+		else
+		{
+			spawnSpr.setTexture(spawnTexWhite);
+		}
 		w.draw(spawnSpr);
 	}
 	virtual void AlphaDraw(sf::RenderWindow &w) {}
@@ -1167,7 +1176,8 @@ private:
 	sf::Vector2f position;
 	sf::Vector2f cameraPos;
 	sf::Sprite spawnSpr;
-	sf::Texture spawnTex;
+	sf::Texture spawnTexBlack;
+	sf::Texture spawnTexWhite;
 
 	bool valid = false;
 	int id = 2;

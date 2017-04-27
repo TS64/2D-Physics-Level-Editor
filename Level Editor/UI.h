@@ -24,8 +24,8 @@ public:
 	bool HandleEvents(sf::Event e, sf::RenderWindow &w);
 	void Draw(sf::RenderWindow &w);
 	std::string GetNameToSaveLevelAs();
-	void WindowResized();
-	bool CanZoom(float zoom);
+	void WindowResized();		// Window was resized, adjust positions/sizes of stuff
+	bool CanZoom(float zoom);	// Check whether the UI can zoom okay
 
 	enum Mode { BUILDING, SAVING, LOADING, EDITING, PLAYING, OPTIONS };
 	enum Attribute { BOUNCE, FRICTION, DENSITY, ROTATION, POSITIONX, POSITIONY };
@@ -37,21 +37,17 @@ private:
 	sf::RectangleShape textBoxHighlight;
 	sf::RectangleShape backgroundBox;
 
-	sf::Sprite elementSelectSpr;
-	sf::Sprite saveLevelUISpr;
-	sf::Sprite levelNameBoxSpr;
-	sf::Sprite scrollDownSpr;
-	sf::Sprite scrollUpSpr;
-	sf::Sprite scrollLeftSpr;
-	sf::Sprite scrollRightSpr;
-	sf::Sprite blockAttributeSpr;
-	sf::Sprite bounceTextBoxSpr;
-	sf::Sprite positionXTextBoxSpr;
-	sf::Sprite positionYTextBoxSpr;
-	sf::Sprite frictionTextBoxSpr;
-	sf::Sprite densityTextBoxSpr;
-	sf::Sprite positionTextBoxSpr;
-	sf::Sprite rotationTextBoxSpr;
+	sf::Sprite elementSelectSpr;	// Red box surrounding the currently selected element
+	sf::Sprite saveLevelUISpr;		// Gray box containing the textbox you type a level name in 
+	sf::Sprite levelNameBoxSpr;		// Gray textbox containing the level name
+	sf::Sprite scrollDownSpr;		// Scroll down the level list sprite
+	sf::Sprite scrollUpSpr;			// Scroll up the level list sprite
+	sf::Sprite scrollLeftSpr;		// Scroll left on the element list sprite
+	sf::Sprite scrollRightSpr;		// Scroll right on the element list sprite
+	sf::Sprite blockAttributeSpr;	// Gray box containing a block's attributes
+	sf::Sprite bounceTextBoxSpr;	// White textbox containing an attribute's value
+	sf::Sprite positionXTextBoxSpr;	// White textbox containing a block's x-position
+	sf::Sprite positionYTextBoxSpr; // White textbox containing a block's y-position
 	sf::Sprite saveChangesSpr;
 	sf::Sprite backgroundBtnSpr;
 	sf::Sprite saveBlockSpr;

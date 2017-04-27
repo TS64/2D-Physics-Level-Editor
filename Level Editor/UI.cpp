@@ -80,7 +80,6 @@ UI::UI(LevelEditor* e, FileManager* f, Player* p, MathMethods* m, sf::View* v)
 	int gap = abs(((scrollLeftSpr.getPosition().x + (scrollLeftTex.getSize().x * math->ZOOM)) + 10)
 		- (scrollRightSpr.getPosition().x - 10));
 	maxElementsOnScreen = gap / (50 * math->ZOOM);
-	cout << "maxElementsOfScreen: " << maxElementsOnScreen << endl;
 }
 
 bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
@@ -90,6 +89,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 		e.mouseButton.button == sf::Mouse::Left)
 	{
 		sf::Vector2f mousePos = math->mapPixelToCoords(sf::Vector2f(e.mouseButton.x, e.mouseButton.y));
+		
 		for (unsigned int i = 0; i < buttons.size(); i++)
 		{
 			if (e.mouseButton.x >= buttons[i]->GetPosition().x && e.mouseButton.x <= buttons[i]->GetPosition().x + (buttons[i]->GetSize().x * math->ZOOM) &&
@@ -102,7 +102,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 					mode = (Mode)m;
 					SwitchMode(mode);
 				}
-				clicked = true;
+				return true;
 			}
 		}
 		for (int i = 0; i < displayedElementButtons.size(); i++)
@@ -118,7 +118,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 				float density = std::get<2>(displayedElementStats[i]);
 				editor->SetCurrentBlockStats(friction, bounce, density);
 				selectedElement = i;
-				clicked = true;
+				return true;
 			}
 		}
 		if (mode == BUILDING)
@@ -135,6 +135,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 				{
 					displayingBGs = true;
 				}
+				return true;
 			}
 
 			// Scroll element list left
@@ -143,6 +144,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 			{
 				printf("clicked scroll Left\n");
 				ScrollElementsList(-1);
+				return true;
 			}
 
 			// Scroll element list right
@@ -151,14 +153,16 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 			{
 				printf("clicked scroll Right\n");
 				ScrollElementsList(1);
+				return true;
 			}
 
 			// Save a custom block to your list
-			if (mousePos.x >= saveBlockSpr.getPosition().x && mousePos.x <= saveBlockSpr.getPosition().x + (450 * math->ZOOM) &&
-				mousePos.y >= saveBlockSpr.getPosition().y && mousePos.y <= saveBlockSpr.getPosition().y + (450 * math->ZOOM))
+			if (mousePos.x >= saveBlockSpr.getPosition().x && mousePos.x <= saveBlockSpr.getPosition().x + (50 * math->ZOOM) &&
+				mousePos.y >= saveBlockSpr.getPosition().y && mousePos.y <= saveBlockSpr.getPosition().y + (50 * math->ZOOM))
 			{
 				printf("clicked save block button\n");
 				AddNewElement();
+				return true;
 			}
 
 			sf::Vector2f yesPos = sf::Vector2f(shapeSelectBoxSpr.getPosition().x + (((456 + 97) / 3.0f) * math->ZOOM), shapeSelectBoxSpr.getPosition().y + ((85 / 3.0f) * math->ZOOM));
@@ -172,6 +176,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 				printf("GRAVITY OFF\n");
 				gravitySelected = false;
 				editor->SetIsKine(true);
+				return true;
 			}
 			if (mousePos.x >= yesPos.x && mousePos.x <= yesPos.x + width &&
 				mousePos.y >= yesPos.y && mousePos.y <= yesPos.y + height)
@@ -179,6 +184,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 				printf("GRAVITY ON\n");
 				gravitySelected = true;
 				editor->SetIsKine(false);
+				return true;
 			}
 			for (int i = 0; i < 3; i++)
 			{
@@ -193,6 +199,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 				{
 					cout << "Set shape: " << i << endl;
 					editor->SetShape(i);
+					return true;
 				}
 			}
 			shapeSelectBoxSpr.setPosition((view1->getSize().x / 2.0f) - ((450 / 3.0f) / 2.0f) * math->ZOOM, 57 * math->ZOOM);
@@ -208,6 +215,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 						currentBGSpr = BGBtnSprVec[i];
 						currentBGSpr.setPosition(5 * math->ZOOM, 62 * math->ZOOM);
 						currentBGSpr.setScale((1.0f / 3.0f) * math->ZOOM, (1.0f / 3.0f) * math->ZOOM);
+						return true;
 					}
 				}
 			}
@@ -238,6 +246,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 					cout << "Selected to load: " << (string)levelNamesText[i].getString() << endl;
 					textBoxHighlight.setPosition(levelNamesText[i].getGlobalBounds().left, levelNamesText[i].getGlobalBounds().top);
 					textBoxHighlight.setSize(sf::Vector2f(levelNamesText[i].getLocalBounds().width, levelNamesText[i].getLocalBounds().height));
+					//cout << "highsize: " << textBoxHighlight.getSize().x << "-" << textBoxHighlight.getSize().y << endl;
 					editor->SetNameOfLevelToLoad(levelNamesText[i].getString());
 				}
 			}
@@ -246,18 +255,21 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 			{
 				printf("Scroll down\n");
 				ScrollLevelList(1);
+				return true;
 			}
 			else if (mousePos.x >= scrollUpSpr.getPosition().x && mousePos.x <= scrollUpSpr.getPosition().x + (scrollUpTex.getSize().x * math->ZOOM) &&
 				mousePos.y >= scrollUpSpr.getPosition().y && mousePos.y <= scrollUpSpr.getPosition().y + (scrollUpTex.getSize().y * math->ZOOM))
 			{
 				printf("Scroll Up\n");
 				ScrollLevelList(-1);
+				return true;
 			}
 		}
 		else if (mode == EDITING)
 		{
 			sf::Vector2f mousePos = sf::Vector2f(e.mouseButton.x, e.mouseButton.y);
 			mousePos = w.mapPixelToCoords((sf::Vector2i)mousePos);
+			cout << "mousePos: " << mousePos.x << "-" << mousePos.y << endl;
 			if (mousePos.x >= saveChangesSpr.getPosition().x && mousePos.x <= saveChangesSpr.getPosition().x + (saveChangesTex.getSize().x * math->ZOOM) &&
 				mousePos.y >= saveChangesSpr.getPosition().y && mousePos.y <= saveChangesSpr.getPosition().y + (saveChangesTex.getSize().y * math->ZOOM))
 			{
@@ -285,12 +297,6 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 				{
 					rotationValText.setString("0");
 				}
-				cout << "Setting bounce to " << (string)bounceValText.getString() << " on block " << editor->GetCurrentBlock() << endl;
-				cout << "Setting friction to " << (string)frictionValText.getString() << " on block " << editor->GetCurrentBlock() << endl;
-				cout << "Setting density to " << (string)densityValText.getString() << " on block " << editor->GetCurrentBlock() << endl;
-				cout << "Setting positionX to " << (string)positionXValText.getString() << " on block " << editor->GetCurrentBlock() << endl;
-				cout << "Setting positionY to " << (string)positionYValText.getString() << " on block " << editor->GetCurrentBlock() << endl;
-				cout << "Setting rotation to " << (string)rotationValText.getString() << " on block " << editor->GetCurrentBlock() << endl;
 
 				float friction = stof((string)frictionValText.getString());
 				float bounce = stof((string)bounceValText.getString());
@@ -298,8 +304,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 				float rotation = stof((string)rotationValText.getString());
 				float positionX = stof((string)positionXValText.getString());
 				float positionY = stof((string)positionYValText.getString());
-				cout << "Setting stats to: Friction: " << friction << "|Bounce: " << bounce << "|Density: " << density 
-					<< "|Rotation: " << rotation << "|PositionX: " << positionX << "|PositionY: " << positionY << endl;
+
 				editor->SetBounciness(editor->GetCurrentBlock(), bounce);
 				editor->SetFriction(editor->GetCurrentBlock(), friction);
 				editor->SetDensity(editor->GetCurrentBlock(), density);
@@ -307,35 +312,33 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 				editor->SetPosition(editor->GetCurrentBlock(), sf::Vector2f(positionX, positionY));
 				editor->SetCurrentBlockStats(friction, bounce, density);
 				SwitchMode(BUILDING);
-				clicked = true;
+				editor->TurnOffHighlight();
+				return true;
 			}
 			for (int i = 0; i < attributeSprVec.size(); i++)
 			{
-				if (mousePos.x >= attributeSprVec[i].getPosition().x && mousePos.x <= attributeSprVec[i].getPosition().x + (attributeSprVec[i].getTexture()->getSize().x * math->ZOOM) &&
-					mousePos.y >= attributeSprVec[i].getPosition().y && mousePos.y <= attributeSprVec[i].getPosition().y + (attributeSprVec[i].getTexture()->getSize().y * math->ZOOM))
+				if (mousePos.x >= attributeSprVec[i].getPosition().x && mousePos.x <= attributeSprVec[i].getPosition().x + ((attributeSprVec[i].getTexture()->getSize().x / 3.0f) * math->ZOOM) &&
+					mousePos.y >= attributeSprVec[i].getPosition().y && mousePos.y <= attributeSprVec[i].getPosition().y + ((attributeSprVec[i].getTexture()->getSize().y / 3.0f) * math->ZOOM))
 				{
 					enteringText = true;
 					textBoxHighlight.setPosition(attributeSprVec[i].getPosition());
-					//textBoxHighlight.setPosition(math->mapPixelToCoords(textBoxHighlight.getPosition()));
 					textBoxHighlight.setSize(((sf::Vector2f)attributeSprVec[i].getTexture()->getSize() / 3.0f) * math->ZOOM);
 					attribute = (Attribute)i;
 				}
 			}
-			if (mousePos.x >= positionXTextBoxSpr.getPosition().x && mousePos.x <= positionXTextBoxSpr.getPosition().x + (positionXTextBoxSpr.getTexture()->getSize().x * math->ZOOM) &&
-				mousePos.y >= positionXTextBoxSpr.getPosition().y && mousePos.y <= positionXTextBoxSpr.getPosition().y + (positionXTextBoxSpr.getTexture()->getSize().y * math->ZOOM))
+			if (mousePos.x >= positionXTextBoxSpr.getPosition().x && mousePos.x <= positionXTextBoxSpr.getPosition().x + ((positionXTextBoxSpr.getTexture()->getSize().x / 3.0f) * math->ZOOM) &&
+				mousePos.y >= positionXTextBoxSpr.getPosition().y && mousePos.y <= positionXTextBoxSpr.getPosition().y + ((positionXTextBoxSpr.getTexture()->getSize().y / 3.0f) * math->ZOOM))
 			{
 				enteringText = true;
 				textBoxHighlight.setPosition(positionXTextBoxSpr.getPosition());
-				//textBoxHighlight.setPosition(math->mapPixelToCoords(textBoxHighlight.getPosition()));
 				textBoxHighlight.setSize(((sf::Vector2f)positionXTextBoxSpr.getTexture()->getSize() / 3.0f) * math->ZOOM);
 				attribute = POSITIONX;
 			}
-			if (mousePos.x >= positionYTextBoxSpr.getPosition().x && mousePos.x <= positionYTextBoxSpr.getPosition().x + (positionYTextBoxSpr.getTexture()->getSize().x * math->ZOOM) &&
-				mousePos.y >= positionYTextBoxSpr.getPosition().y && mousePos.y <= positionYTextBoxSpr.getPosition().y + (positionYTextBoxSpr.getTexture()->getSize().y * math->ZOOM))
+			if (mousePos.x >= positionYTextBoxSpr.getPosition().x && mousePos.x <= positionYTextBoxSpr.getPosition().x + ((positionYTextBoxSpr.getTexture()->getSize().x / 3.0f) * math->ZOOM) &&
+				mousePos.y >= positionYTextBoxSpr.getPosition().y && mousePos.y <= positionYTextBoxSpr.getPosition().y + ((positionYTextBoxSpr.getTexture()->getSize().y / 3.0f) * math->ZOOM))
 			{
 				enteringText = true;
 				textBoxHighlight.setPosition(positionYTextBoxSpr.getPosition());
-				//textBoxHighlight.setPosition(math->mapPixelToCoords(textBoxHighlight.getPosition()));
 				textBoxHighlight.setSize(((sf::Vector2f)positionYTextBoxSpr.getTexture()->getSize() / 3.0f) * math->ZOOM);
 				attribute = POSITIONY;
 			}
@@ -413,7 +416,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 								str += static_cast<char>(e.text.unicode);
 								bounceValText.setString(str);
 							}
-							if (static_cast<char>(e.text.unicode) == '.')
+							else if (static_cast<char>(e.text.unicode) == '.')
 							{
 								string str = bounceValText.getString();
 								if (str.find('.') == std::string::npos)
@@ -455,7 +458,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 								str += static_cast<char>(e.text.unicode);
 								frictionValText.setString(str);
 							}
-							if (static_cast<char>(e.text.unicode) == '.')
+							else if (static_cast<char>(e.text.unicode) == '.')
 							{
 								string str = frictionValText.getString();
 								if (str.find('.') == std::string::npos)
@@ -497,7 +500,7 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 								str += static_cast<char>(e.text.unicode);
 								densityValText.setString(str);
 							}
-							if (static_cast<char>(e.text.unicode) == '.')
+							else if (static_cast<char>(e.text.unicode) == '.')
 							{
 								string str = densityValText.getString();
 								if (str.find('.') == std::string::npos)
@@ -539,12 +542,21 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 								str += static_cast<char>(e.text.unicode);
 								rotationValText.setString(str);
 							}
-							if (static_cast<char>(e.text.unicode) == '.')
+							else if (static_cast<char>(e.text.unicode) == '.')
 							{
 								string str = rotationValText.getString();
 								if (str.find('.') == std::string::npos)
 								{
 									str += ".";
+									rotationValText.setString(str);
+								}
+							}
+							else if (static_cast<char>(e.text.unicode) == '-')
+							{
+								string str = rotationValText.getString();
+								if (str == "")
+								{
+									str += "-";
 									rotationValText.setString(str);
 								}
 							}
@@ -581,12 +593,21 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 								str += static_cast<char>(e.text.unicode);
 								positionXValText.setString(str);
 							}
-							if (static_cast<char>(e.text.unicode) == '.')
+							else if (static_cast<char>(e.text.unicode) == '.')
 							{
 								string str = positionXValText.getString();
 								if (str.find('.') == std::string::npos)
 								{
 									str += ".";
+									positionXValText.setString(str);
+								}
+							}
+							else if (static_cast<char>(e.text.unicode) == '-')
+							{
+								string str = positionXValText.getString();
+								if (str == "")
+								{
+									str += "-";
 									positionXValText.setString(str);
 								}
 							}
@@ -623,12 +644,21 @@ bool UI::HandleEvents(sf::Event e, sf::RenderWindow &w)
 								str += static_cast<char>(e.text.unicode);
 								positionYValText.setString(str);
 							}
-							if (static_cast<char>(e.text.unicode) == '.')
+							else if (static_cast<char>(e.text.unicode) == '.')
 							{
 								string str = positionYValText.getString();
 								if (str.find('.') == std::string::npos)
 								{
 									str += ".";
+									positionYValText.setString(str);
+								}
+							}
+							else if (static_cast<char>(e.text.unicode) == '-')
+							{
+								string str = positionYValText.getString();
+								if (str == "")
+								{
+									str += "-";
 									positionYValText.setString(str);
 								}
 							}
@@ -655,7 +685,6 @@ void UI::Draw(sf::RenderWindow &w)
 		case BUILDING:
 		{
 			top_UI_box.setPosition(-2, -2);
-			//top_UI_box.setSize(sf::Vector2f(view1->getSize().x + 4, 57 ));
 			top_UI_box.setPosition(w.mapPixelToCoords((sf::Vector2i)top_UI_box.getPosition()));
 			w.draw(top_UI_box);
 
@@ -739,10 +768,10 @@ void UI::Draw(sf::RenderWindow &w)
 			cameraPosText.setString("(" + to_string((int)view1->getCenter().x - ((int)view1->getSize().x / 2)) 
 				+ ", " + to_string((int)view1->getCenter().y - ((int)view1->getSize().y / 2)) + ")");
 			cameraPosText.setCharacterSize(20 * math->ZOOM);
-			cameraPosText.setPosition(view1->getSize().x - cameraPosText.getLocalBounds().width, 60 * math->ZOOM);
+			cameraPosText.setPosition(view1->getSize().x - (cameraPosText.getLocalBounds().width), 60 * math->ZOOM);
 			cameraPosText.setPosition(math->mapPixelToCoords(cameraPosText.getPosition()));
 			w.draw(cameraPosText);
-			cameraSpr.setPosition(cameraPosText.getPosition().x - (cameraTex.getSize().x * cameraSpr.getScale().x) + 10, (cameraPosText.getPosition().y - 3) * math->ZOOM);
+			cameraSpr.setPosition(cameraPosText.getPosition().x - (cameraTex.getSize().x * cameraSpr.getScale().x) + 10, cameraPosText.getPosition().y - (3 * math->ZOOM));
 			cameraSpr.setScale((1.0f / 5.0f) * math->ZOOM, (1.0f / 5.0f) * math->ZOOM);
 			w.draw(cameraSpr);
 
@@ -948,7 +977,7 @@ void UI::Draw(sf::RenderWindow &w)
 		case PLAYING:
 		{
 			// Build button
-			buttons[0]->SetPosition(sf::Vector2f(0, view1->getSize().y - 50));
+			buttons[0]->SetPosition(sf::Vector2f(0, view1->getSize().y - (50 * math->ZOOM)));
 
 			for (int i = 0; i < buttons.size(); i++)
 			{
@@ -1064,7 +1093,6 @@ bool UI::ScrollLevelList(int i)
 	{
 		return false;
 	}
-	cout << "topOfList: " << maxLevelsOnScreen << endl;
 	if (availableLevels.size() > maxLevelsOnScreen &&
 		topOfLevelList + i >= 0 &&
 		topOfLevelList + i + maxLevelsOnScreen <= availableLevels.size())
@@ -1102,6 +1130,12 @@ bool UI::ScrollLevelList(int i)
 		levelNamesText.back().setPosition(sf::Vector2f(50.0f, 50 + (25.0f * math->ZOOM) + 5 + (i * levelNamesText.back().getCharacterSize())));
 		levelNamesText.back().setPosition(math->mapPixelToCoords(levelNamesText.back().getPosition()));
 	}
+
+	textBoxHighlight.setPosition(levelNamesText[selectedLevelID].getGlobalBounds().left,
+		levelNamesText[selectedLevelID].getGlobalBounds().top);
+	textBoxHighlight.setSize(sf::Vector2f(levelNamesText[selectedLevelID].getLocalBounds().width,
+		levelNamesText[selectedLevelID].getLocalBounds().height));
+	textBoxHighlight.setOutlineThickness(2.0f * math->ZOOM);
 
 	return true;
 }
@@ -1200,7 +1234,6 @@ void UI::AddNewElement()
 			float bounce = editor->GetBlockBody(editor->GetCurrentBlock())->GetFixtureList()->GetRestitution();
 			float density = editor->GetBlockBody(editor->GetCurrentBlock())->GetFixtureList()->GetDensity();
 			elementStats.push_back({ friction, bounce, density });
-			cout << "New grass stats to add: Friction: " << friction << "|Bounce: " << bounce << "|Density: " << density << endl;
 			ScrollElementsList(1);
 			break;
 		}
@@ -1212,7 +1245,6 @@ void UI::AddNewElement()
 			float bounce = editor->GetBlockBody(editor->GetCurrentBlock())->GetFixtureList()->GetRestitution();
 			float density = editor->GetBlockBody(editor->GetCurrentBlock())->GetFixtureList()->GetDensity();
 			elementStats.push_back({ friction, bounce, density });
-			cout << "New ice stats to add: Friction: " << friction << "|Bounce: " << bounce << "|Density: " << density << endl;
 			ScrollElementsList(1);
 			break;
 		}
@@ -1224,7 +1256,6 @@ void UI::AddNewElement()
 			float bounce = editor->GetBlockBody(editor->GetCurrentBlock())->GetFixtureList()->GetRestitution();
 			float density = editor->GetBlockBody(editor->GetCurrentBlock())->GetFixtureList()->GetDensity();
 			elementStats.push_back({ friction, bounce, density });
-			cout << "New water stats to add: Friction: " << friction << "|Bounce: " << bounce << "|Density: " << density << endl;
 			ScrollElementsList(1);
 			break;
 		}
@@ -1236,13 +1267,12 @@ void UI::AddNewElement()
 			float bounce = editor->GetBlockBody(editor->GetCurrentBlock())->GetFixtureList()->GetRestitution();
 			float density = editor->GetBlockBody(editor->GetCurrentBlock())->GetFixtureList()->GetDensity();
 			elementStats.push_back({ friction, bounce, density });
-			cout << "New metal stats to add: Friction: " << friction << "|Bounce: " << bounce << "|Density: " << density << endl;
 			ScrollElementsList(1);
 			break;
 		}
 		case 4: // SPAWN
 		{
-			
+			break;
 		}
 		case 5: // FINISH
 		{
@@ -1260,7 +1290,6 @@ void UI::DeleteElement(sf::RenderWindow &w)
 			sf::Mouse::getPosition(w).y <= displayedElementButtons[i]->GetPosition().y + (displayedElementButtons[i]->GetSize().y * math->ZOOM))
 		{
 			int elementToDelete = topOfElementsList + i;
-			cout << "Deleting element: " << elementToDelete << endl;
 			if (elementToDelete > 5)
 			{
 				elementButtons.erase(elementButtons.begin() + elementToDelete);
@@ -1361,10 +1390,10 @@ void UI::WindowResized()
 		}
 		case LOADING:
 		{
+			ScrollLevelList(0);
 			selectedLevelID = 0;
 			if (levelNamesText.size() > 0)
 			{
-				cout << "Selected to load: " << (string)levelNamesText[selectedLevelID].getString() << endl;
 				textBoxHighlight.setPosition(levelNamesText[selectedLevelID].getGlobalBounds().left,
 					levelNamesText[selectedLevelID].getGlobalBounds().top);
 				textBoxHighlight.setSize(sf::Vector2f(levelNamesText[selectedLevelID].getLocalBounds().width,
@@ -1372,15 +1401,12 @@ void UI::WindowResized()
 				textBoxHighlight.setOutlineThickness(2.0f * math->ZOOM);
 				editor->SetNameOfLevelToLoad(levelNamesText[selectedLevelID].getString());
 			}
+
 			break;
 		}
 		case EDITING:
 		{
 			blockAttributeSpr.setPosition(sf::Vector2f((view1->getSize().x / 2) - (350 * math->ZOOM), (view1->getSize().y / 2) - (100 * math->ZOOM)));
-			/*bounceTextBoxSpr.setPosition(sf::Vector2f(blockAttributeSpr.getPosition().x + (40 * math->ZOOM),
-				blockAttributeSpr.getPosition().y + (50 * math->ZOOM)));*/
-			bounceValText.setPosition(sf::Vector2f(bounceTextBoxSpr.getPosition().x + (10 * math->ZOOM),
-				bounceTextBoxSpr.getPosition().y));
 			saveChangesSpr.setPosition(sf::Vector2f(blockAttributeSpr.getPosition().x + (300 + math->ZOOM),
 				blockAttributeSpr.getPosition().y + (145 * math->ZOOM)));
 
@@ -1395,20 +1421,35 @@ void UI::WindowResized()
 
 			for (int i = 0; i < 4; i++)
 			{
-				attributeSprVec[i].setPosition(sf::Vector2f(blockAttributeSpr.getPosition().x + (100 * math->ZOOM),
-					blockAttributeSpr.getPosition().y + ((10 + (i + 20)) * math->ZOOM)));
+				attributeSprVec[i].setPosition(sf::Vector2f(blockAttributeSpr.getPosition().x + (155 * math->ZOOM),
+					blockAttributeSpr.getPosition().y + ((12 + (i * 26)) * math->ZOOM)));
 				attributeSprVec[i].setPosition(math->mapPixelToCoords(attributeSprVec[i].getPosition()));
 			}
 
-			positionXTextBoxSpr.setPosition(sf::Vector2f(blockAttributeSpr.getPosition().x + (100 * math->ZOOM),
-				blockAttributeSpr.getPosition().y + ((10 + (4 + 20)) * math->ZOOM)));
+			positionXTextBoxSpr.setPosition(sf::Vector2f(blockAttributeSpr.getPosition().x + (155 * math->ZOOM),
+				blockAttributeSpr.getPosition().y + ((12 + (4 * 26)) * math->ZOOM)));
 			positionXTextBoxSpr.setScale((1.0f / 3.0f) * math->ZOOM, (1.0f / 3.0f) * math->ZOOM);
-			positionYTextBoxSpr.setPosition(sf::Vector2f(blockAttributeSpr.getPosition().x + ((100 + 50) * math->ZOOM),
-				blockAttributeSpr.getPosition().y + ((10 + (4 + 20)) * math->ZOOM)));
+			positionYTextBoxSpr.setPosition(sf::Vector2f(blockAttributeSpr.getPosition().x + ((155 + 89 + 50) * math->ZOOM),
+				blockAttributeSpr.getPosition().y + ((12 + (4 * 26)) * math->ZOOM)));
 			positionYTextBoxSpr.setScale((1.0f / 3.0f) * math->ZOOM, (1.0f / 3.0f) * math->ZOOM);
+
+			if ((int)attribute < 4)
+			{
+				textBoxHighlight.setPosition(attributeSprVec[(int)attribute].getPosition());
+				textBoxHighlight.setSize(((sf::Vector2f)attributeSprVec[(int)attribute].getTexture()->getSize() / 3.0f) * math->ZOOM);
+			}
+			if ((int)attribute == 4)
+			{
+				textBoxHighlight.setPosition(positionXTextBoxSpr.getPosition());
+				textBoxHighlight.setSize(((sf::Vector2f)positionXTextBoxSpr.getTexture()->getSize() / 3.0f) * math->ZOOM);
+			}
+			if ((int)attribute == 5)
+			{
+				textBoxHighlight.setPosition(positionYTextBoxSpr.getPosition());
+				textBoxHighlight.setSize(((sf::Vector2f)positionYTextBoxSpr.getTexture()->getSize() / 3.0f) * math->ZOOM);
+			}
 		}
 	}
-	
 
 	levelNameBoxSpr.setPosition(sf::Vector2f(saveLevelUISpr.getPosition().x + ((saveLevelUITex.getSize().x / 2) * math->ZOOM)
 		- ((600 / 2) * math->ZOOM),
@@ -1490,13 +1531,7 @@ void UI::WindowResized()
 	gravitySelectBoxSpr.setScale((1.0f / 3.0f) * math->ZOOM, (1.0f / 3.0f) * math->ZOOM);
 	gravitySelectBoxSpr.setPosition((shapeSelectBoxSpr.getPosition().x + 456) * math->ZOOM, (shapeSelectBoxSpr.getPosition().y + 85) * math->ZOOM);
 
-	///// CHANGING LEVEL LIST /////
-	// Change level list
-	//RepositionLevelList();
-	ScrollLevelList(0);
-
 	///// CHANGING ELEMENTS LIST /////
-	//RepositionElementList();
 	ScrollElementsList(0);
 }
 
@@ -1516,7 +1551,6 @@ bool UI::CanZoom(float zoom)
 	sf::Vector2f scrollRight = math->mapPixelToCoords(sf::Vector2f(leftOfSaveBlock, 5));
 
 	int gap = (leftOfSaveBlock - 5) - (rightOfLoad + 5);
-	//cout << "Test Element Gap: " << gap << endl;
 	int temp = gap / (50 * zoom);
 	if (temp <= 0)
 	{
@@ -1525,17 +1559,17 @@ bool UI::CanZoom(float zoom)
 	}
 
 	gap = (scrollDownSpr.getPosition().y - 10) - (scrollUpSpr.getPosition().y + (scrollUpTex.getSize().y * math->ZOOM) + 5);
-	//cout << "Test Level gap: " << gap << endl;
 	temp = gap / (levelListFontSize * zoom);
 	if (temp <= 0)
 	{
 		printf("Can't zoom, levels won't fit\n");
 		return false;
 	}
+
+	return true;
 }
 void UI::SwitchMode(int m)
 {
-	cout << "SWITCHED MODE: " << m << endl;
 	mode = (Mode)m;
 	for (int i = 0; i < buttons.size(); i++)
 	{
@@ -1622,12 +1656,6 @@ void UI::SwitchMode(int m)
 		positionXValText.setString(xVal);
 		positionYValText.setString(yVal);
 		rotationValText.setString(rVal);
-		cout << "Current bounce value: " << (string)bounceValText.getString() << " on block: " << editor->GetCurrentBlock() << endl;
-		cout << "Current friction value: " << (string)frictionValText.getString() << " on block: " << editor->GetCurrentBlock() << endl;
-		cout << "Current density value: " << (string)densityValText.getString() << " on block: " << editor->GetCurrentBlock() << endl;
-		cout << "Current positionX value: " << (string)positionXValText.getString() << " on block: " << editor->GetCurrentBlock() << endl;
-		cout << "Current positionY value: " << (string)positionYValText.getString() << " on block: " << editor->GetCurrentBlock() << endl;
-		cout << "Current rotation value: " << (string)rotationValText.getString() << " on block: " << editor->GetCurrentBlock() << endl;
 		//enteringText = true;
 	}
 	else if (mode == PLAYING)
@@ -1638,8 +1666,6 @@ void UI::SwitchMode(int m)
 
 		editor->SaveDefaultLevel();
 		player->SetPlaying(true);
-		cout << "setting player pos: " << editor->GetPlayerSpawn().x <<
-			"-" << editor->GetPlayerSpawn().y << endl;
 		player->SetPosition(sf::Vector2f(editor->GetPlayerSpawn().x / 1, editor->GetPlayerSpawn().y / 1));
 		player->SetVelocity(sf::Vector2f(0, 0));
 	}
@@ -1741,43 +1767,31 @@ void UI::LoadContent()
 	bounceValText.setString("");
 	bounceValText.setCharacterSize(20);
 	bounceValText.setFont(arialFont);
-	bounceValText.setPosition(sf::Vector2f(bounceTextBoxSpr.getPosition().x + 5, 
-		bounceTextBoxSpr.getPosition().y));
 	bounceValText.setFillColor(sf::Color::Black);
 
 	frictionValText.setString("");
 	frictionValText.setCharacterSize(20);
 	frictionValText.setFont(arialFont);
-	frictionValText.setPosition(sf::Vector2f(bounceTextBoxSpr.getPosition().x + 5,
-		bounceTextBoxSpr.getPosition().y));
 	frictionValText.setFillColor(sf::Color::Black);
 
 	densityValText.setString("");
 	densityValText.setCharacterSize(20);
 	densityValText.setFont(arialFont);
-	densityValText.setPosition(sf::Vector2f(bounceTextBoxSpr.getPosition().x + 5,
-		bounceTextBoxSpr.getPosition().y));
 	densityValText.setFillColor(sf::Color::Black);
 
 	positionXValText.setString("");
 	positionXValText.setCharacterSize(20);
 	positionXValText.setFont(arialFont);
-	positionXValText.setPosition(sf::Vector2f(bounceTextBoxSpr.getPosition().x + 5,
-		bounceTextBoxSpr.getPosition().y));
 	positionXValText.setFillColor(sf::Color::Black);
 
 	positionYValText.setString("");
 	positionYValText.setCharacterSize(20);
 	positionYValText.setFont(arialFont);
-	positionYValText.setPosition(sf::Vector2f(bounceTextBoxSpr.getPosition().x + 5,
-		bounceTextBoxSpr.getPosition().y));
 	positionYValText.setFillColor(sf::Color::Black);
 
 	rotationValText.setString("");
 	rotationValText.setCharacterSize(20);
 	rotationValText.setFont(arialFont);
-	rotationValText.setPosition(sf::Vector2f(bounceTextBoxSpr.getPosition().x + 5,
-		bounceTextBoxSpr.getPosition().y));
 	rotationValText.setFillColor(sf::Color::Black);
 
 	cameraPosText.setString("");

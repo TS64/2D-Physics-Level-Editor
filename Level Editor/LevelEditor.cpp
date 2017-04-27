@@ -7,7 +7,7 @@ LevelEditor::LevelEditor(sf::View* v, MathMethods* m) : m_world(b2Vec2(0, 9.81 *
 
 	shapeHighlight.setFillColor(sf::Color::Blue);
 
-	shapeSelected = false;
+	isShapeSelected = false;
 	selectedShapeID = -1;
 	highlightThickness = 2;
 	zoomLevel = 1.0f;
@@ -256,7 +256,6 @@ void LevelEditor::UpdatePreview(sf::RenderWindow &w) // Draw preview for block a
 					sf::Vector2i tempPos = originalPos;
 					float r = math->DistanceBetweenPoints((sf::Vector2f)mouseDownPos, (sf::Vector2f)mouseCurrentPos);
 					tempBlock->SetPosition((sf::Vector2f)mouseDownPos);
-					cout << "dist: " << r << endl;
 					tempBlock->Resize(sf::Vector2f(r, r));
 				}
 			}
@@ -283,9 +282,7 @@ void LevelEditor::UpdatePreview(sf::RenderWindow &w) // Draw preview for block a
 					float dot = math->DotProduct(normalized, sf::Vector2f(1, 0));
 					float det = math->Determinant(normalized, sf::Vector2f(1, 0));
 					float angle = atan2(det, dot) * (180 / 3.14f);
-					//cout << "Normalized: " << normalized.x << "-" << normalized.y << "|Angle: " << angle << endl;
 					tempBlock->SetRotation(angle);
-					//cout << "dist: " << r << endl;
 					tempBlock->Resize(sf::Vector2f(r, r));
 				}
 			}
@@ -425,7 +422,7 @@ void LevelEditor::HandleDrawing(sf::Event e, sf::RenderWindow &w)
 
 void LevelEditor::MoveCamera(sf::Event e)
 {
-	if (!shapeSelected)
+	if (!isShapeSelected)
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
@@ -467,7 +464,7 @@ void LevelEditor::MoveCamera(sf::Event e)
 
 void LevelEditor::MoveShape(sf::Event e)
 {
-	if (shapeSelected)
+	if (isShapeSelected)
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
@@ -569,7 +566,7 @@ bool LevelEditor::ClickedBlock(sf::Event e, sf::RenderWindow &w)
 					(panSpr.getTextureRect().width / 4.0f) - cameraPos.x,
 					blocks[i]->GetScreenPosition().y + (blocks[i]->GetSize().y / 2.0f) - 
 					(panSpr.getTextureRect().height / 4.0f) - cameraPos.y));
-				shapeSelected = true;
+				isShapeSelected = true;
 				cout << "SELECTED" << endl;
 				selectedShapeID = i;
 				return true;
@@ -590,13 +587,12 @@ bool LevelEditor::ClickedBlock(sf::Event e, sf::RenderWindow &w)
 					(panSpr.getTextureRect().width / 4.0f) - cameraPos.x,
 					blocks[i]->GetScreenPosition().y -
 					(panSpr.getTextureRect().height / 4.0f) - cameraPos.y));
-				shapeSelected = true;
+				isShapeSelected = true;
 				cout << "SELECTED" << endl;
 				selectedShapeID = i;
 				return true;
 			}
 			float dist = math->DistanceBetweenPoints((sf::Vector2f)mousePos, blocks[i]->GetScreenPosition());
-			cout << "Dist: " << dist << endl;
 			if (selectedShapeID != i &&
 				dist < 20 &&
 				blocks[i]->BlockType() == 7)
@@ -610,7 +606,7 @@ bool LevelEditor::ClickedBlock(sf::Event e, sf::RenderWindow &w)
 					(panSpr.getTextureRect().width / 4.0f) - cameraPos.x,
 					blocks[i]->GetScreenPosition().y -
 					(panSpr.getTextureRect().height / 4.0f) - cameraPos.y));
-				shapeSelected = true;
+				isShapeSelected = true;
 				cout << "SELECTED" << endl;
 				selectedShapeID = i;
 				return true;
@@ -618,7 +614,7 @@ bool LevelEditor::ClickedBlock(sf::Event e, sf::RenderWindow &w)
 		}
 		if (e.mouseButton.y > 55)
 		{
-			shapeSelected = false;
+			isShapeSelected = false;
 			selectedShapeID = -1;
 		}
 	}
@@ -692,17 +688,32 @@ void LevelEditor::Draw(sf::RenderWindow &w, bool playing)
 	
 	for (int i = 0; i < blocks.size(); i++)
 	{
-		if (shapeSelected && selectedShapeID == i)
+		if (isShapeSelected && selectedShapeID == i)
 		{
 			w.draw(shapeHighlight);
 		}
-		blocks[i]->Draw(w, playing);
+		if (blocks[i]->BlockType() == 4)
+		{
+			if (currentBackground == 1 || currentBackground == 2 || currentBackground == 6)
+			{
+				blocks[i]->Draw(w, true);
+			}
+			else
+			{
+				blocks[i]->Draw(w, false);
+			}
+		}
+		else
+		{
+			blocks[i]->Draw(w, playing);
+		}
+		
 	}
-	if (shapeSelected)
+	if (isShapeSelected)
 	{
 		w.draw(panSpr);
 	}
-	//DrawBox2dDebug(w, cameraMoved);
+	DrawBox2dDebug(w, cameraMoved);
 }
 
 vector<tuple<sf::RectangleShape, int, float, float, float, float, bool>> LevelEditor::getLevelRects()
@@ -807,7 +818,7 @@ void LevelEditor::setLevelRects(vector<tuple<sf::RectangleShape, int, float, flo
 
 int LevelEditor::GetCurrentBlock()
 {
-	if (shapeSelected)
+	if (isShapeSelected)
 	{
 		return selectedShapeID;
 	}
@@ -816,9 +827,9 @@ int LevelEditor::GetCurrentBlock()
 
 void LevelEditor::DeleteBlock(int b)
 {
-	if (shapeSelected)
+	if (isShapeSelected)
 	{
-		shapeSelected = false;
+		isShapeSelected = false;
 
 		//m_world.DestroyBody(blocks[b]->GetBody());
 		delete blocks[b];
@@ -830,7 +841,7 @@ void LevelEditor::DeleteBlock(int b)
 
 int LevelEditor::GetCurrentElement()
 {
-	if (shapeSelected)
+	if (isShapeSelected)
 	{
 		return blocks[selectedShapeID]->BlockType();
 	}
@@ -844,11 +855,11 @@ void LevelEditor::SetCurrentElement(int e)
 void LevelEditor::SetCurrentBlockStats(float friction, float bounce, float density)
 {
 	currentBlockStats = { friction, bounce, density };
-	cout << "Friction: " << friction << "|Bounce: " << bounce << "|Density: " << density << endl;
+	//cout << "Friction: " << friction << "|Bounce: " << bounce << "|Density: " << density << endl;
 }
 int LevelEditor::GetSelectedBlockType()
 {
-	if (shapeSelected)
+	if (isShapeSelected)
 	{
 		return blocks[selectedShapeID]->BlockType();
 	}
@@ -856,7 +867,7 @@ int LevelEditor::GetSelectedBlockType()
 }
 sf::Vector2f LevelEditor::GetSelectedBlockSize()
 {
-	if (shapeSelected)
+	if (isShapeSelected)
 	{
 		return blocks[selectedShapeID]->GetSize();
 	}
@@ -961,7 +972,7 @@ void LevelEditor::CreateBalls(sf::RenderWindow &w)
 
 bool LevelEditor::ShapeSelected()
 {
-	return shapeSelected;
+	return isShapeSelected;
 }
 sf::Vector2f LevelEditor::PositionOfSelectedShape()
 {
@@ -1011,14 +1022,6 @@ float LevelEditor::GetRotation(int block)
 void LevelEditor::SetRotation(int block, float rotation)
 {
 	blocks[block]->SetRotation(rotation);
-}
-int LevelEditor::GetCurrentShape()
-{
-	return shape;
-}
-void LevelEditor::SetCurrentShape(int s)
-{
-	shape = (Shape)s;
 }
 
 void LevelEditor::SetPlayerSpawn(sf::Vector2f pos)
@@ -1174,6 +1177,10 @@ void LevelEditor::SaveDefaultLevel()
 {
 	printf("SAVING DEFAULT\n");
 	defaultLevelRects = getLevelRects();
+}
+void LevelEditor::TurnOffHighlight()
+{
+	isShapeSelected = false;
 }
 
 void LevelEditor::DrawBox2dDebug(sf::RenderWindow &w, bool c)
